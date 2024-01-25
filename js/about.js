@@ -21,8 +21,8 @@ function parseTweets(runkeeper_tweets) {
 		day: 'numeric',
 	};
 	//have to make variables can't put numbertweets-1 directly
-	var firstdate;
-	var lastdate;
+	let firstdate;
+	let lastdate;
 	//the tweet array is reversed latest ot oldest
 	lastdate = tweet_array[0].time;
 	firstdate = tweet_array[tweet_array.length-1].time;
@@ -30,7 +30,52 @@ function parseTweets(runkeeper_tweets) {
 	document.getElementById('lastDate').innerText = lastdate.toLocaleDateString('en-US',options );  */
  	$('#firstDate').text(firstdate.toLocaleDateString('en-US',options ));
 	$('#lastDate').text(lastdate.toLocaleDateString('en-US',options));
+
+	let completedCount = 0;
+	let achievementCount = 0;
+	let liveEventCount = 0;
+	let miscellaneousCount = 0;
+
+	for (let i = 0; i < tweet_array.length; i++) { 
+		let temp = tweet_array[i].source;
+		if (temp == "completed_event") {
+			completedCount++;
+		} else if (temp == "live_event") {
+			liveEventCount++;
+		} else if (temp == "achievement") {
+			achievementCount++;
+		} else if (temp == "miscellaneous") {
+			miscellaneousCount++;
+		}
+	}
+	
+
+	
+	let NumofTweets = tweet_array.length;
+	$(".completedEvents").text(completedCount);
+	$('.liveEvents').text(liveEventCount);
+	$('.achievements').text(achievementCount);
+	$('.miscellaneous').text(miscellaneousCount);
+	let completedCountPerc = math.format((completedCount/NumofTweets)*100, 4);
+	let achievementCountPerc = math.format((achievementCount/NumofTweets)*100, 2);
+	let liveEventCountPerc = math.format((liveEventCount/NumofTweets)*100, 3);
+	let miscellaneousPerc = math.format((miscellaneousCount/NumofTweets)*100, 2);
+
+	$('.completedEventsPct').text(completedCountPerc+"%");
+	$('.liveEventsPct').text(liveEventCountPerc+"%");
+	$('.achievementsPct').text(achievementCountPerc+"%");
+	$('.miscellaneousPct').text(miscellaneousPerc+"%");
+	let writtenCount = 0;
+	for (let i = 0; i < tweet_array.length; i++) { 
+		if (tweet_array[i].written) {
+			writtenCount++;
+		}
+	}
+	$('.written').text(writtenCount);
+	let writtenCountPerc = math.format((writtenCount/NumofTweets)*100, 4);
+	$('.writtenPct').text(writtenCountPerc+'%');
 }
+
 
 //Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', function (event) {
