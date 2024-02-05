@@ -78,6 +78,8 @@ function parseTweets(runkeeper_tweets) {
   WalkingDic.set("Thu", []);
   WalkingDic.set("Fri", []);
   WalkingDic.set("Sat", []);
+  //after having 3 maps of days mapping to arrays we put the distances for each activity per day for the top 3
+  //which is runnign bikingand walking
   for (let i = 0; i < tweet_array.length; i++) {
     if (tweet_array[i].activityType == "running") {
       let day = weekDays[tweet_array[i].time.getDay()];
@@ -98,7 +100,7 @@ function parseTweets(runkeeper_tweets) {
   }
 
   document.getElementById("weekdayOrWeekendLonger").textContent = "Sunday";
-
+  //we have to put it in arrays because vega only takes arays
   let runningData = [];
   RunningDic.forEach((distance, day) => {
     runningData.push({ day: day, distance: distance, activity: "running" });
@@ -117,8 +119,8 @@ function parseTweets(runkeeper_tweets) {
   combinedActivityData = combinedActivityData.concat(runningData);
   combinedActivityData = combinedActivityData.concat(bikingData);
   combinedActivityData = combinedActivityData.concat(walkingData);
-
-  console.log(combinedActivityData);
+  /* 
+  console.log(combinedActivityData); */
   let expandedActivityData = [];
 
   combinedActivityData.forEach((entry) => {
@@ -130,7 +132,8 @@ function parseTweets(runkeeper_tweets) {
       });
     });
   });
-  console.log(expandedActivityData);
+  //this just combined the arrays
+  /*   console.log(expandedActivityData); */
   let activity_vis_spec = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     description:
@@ -158,8 +161,8 @@ function parseTweets(runkeeper_tweets) {
   let distancePerActivity = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     description: "A graph of distances for activities by day of the week.",
-    width: 500,
-    height: 400,
+    width: 400,
+    height: 300,
     data: {
       values: expandedActivityData,
     },
@@ -186,6 +189,7 @@ function parseTweets(runkeeper_tweets) {
         legend: { title: "Activity Type" },
       },
       tooltip: [
+        //fun little feature for hovering which shows data
         { field: "day", type: "ordinal" },
         { field: "distance", type: "quantitative" },
         { field: "activity", type: "nominal" },
@@ -196,6 +200,7 @@ function parseTweets(runkeeper_tweets) {
   //TODO: create the visualizations which group the three most-tweeted activities by the day of the week.
   //Use those visualizations to answer the questions about which activities tended to be longest and when.
   let distancePerActivityAggregated = {
+    //this function the same as above, but using mean
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     description:
       "An aggregated graph of average distances for activities by day of the week.",
@@ -228,6 +233,7 @@ function parseTweets(runkeeper_tweets) {
         legend: { title: "Activity Type" },
       },
       tooltip: [
+        //implemented the same hover
         { field: "day", type: "ordinal" },
         { field: "distance", type: "quantitative", aggregate: "mean" },
         { field: "activity", type: "nominal" },
@@ -243,9 +249,10 @@ function parseTweets(runkeeper_tweets) {
 //Wait for the DOM to load
 document.addEventListener("DOMContentLoaded", function (event) {
   loadSavedRunkeeperTweets().then(parseTweets);
-
+  //hide the means graph first
   distanceVisAggregated.style.display = "none";
   document
+    //this create a function that hids and changes the box dpeending on what is clicked.
     .getElementById("aggregate")
     .addEventListener("click", function (event) {
       var elem = event.target;
